@@ -6,13 +6,16 @@ import axios from 'axios'
 
 
 const Course = () => {
+
+  const api = import.meta.env.VITE_API_URL;
+  console.log(api, " this is api url in course component");
   const [book, setBook] = useState([])
   
   useEffect(() => {
     
     const getbook =async ()=>{
       try {
-        const res =await axios.get('https://bookstoreapp-nmab.onrender.com/book');
+        const res =await axios.get(`${api}/book`);
         console.log(res.data);
         setBook(res.data)
       } catch (error) {

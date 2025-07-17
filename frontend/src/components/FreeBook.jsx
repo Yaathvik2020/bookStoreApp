@@ -7,13 +7,16 @@ import axios from 'axios';
 
 const FreeBook = () => {
 
+    const api = import.meta.env.VITE_API_URL;
+    console.log(api, " this is api url in free book component");
+
     const [book, setBook] = useState([])
   
   useEffect(() => { 
     
     const getbook =async ()=>{
       try {
-        const res =await axios.get('https://bookstoreapp-nmab.onrender.com/book');
+        const res =await axios.get(`${api}/book`);
         const data = res.data.filter((data) => data.category === "Free")
         console.log(data);
         setBook(data)

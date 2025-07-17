@@ -21,6 +21,7 @@ app.use(express.json());
 
 const PORT=process.env.PORT || 4000;
 const URI=process.env.MongoDBURI;
+console.log(URI)
 
 //connect to mongodb
 try {

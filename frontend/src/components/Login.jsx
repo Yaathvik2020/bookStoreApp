@@ -6,6 +6,8 @@ import toast from 'react-hot-toast'
 
 const Login = () => {
 
+    const api = import.meta.env.VITE_API_URL;
+
     const {
         register,
         handleSubmit,
@@ -18,11 +20,11 @@ const Login = () => {
             email : data.email,
             password : data.password
         }
-        await axios.post('https://bookstoreapp-nmab.onrender.com/user/login', userInfo)
+        await axios.post(`${api}/user/login`, userInfo)
         .then((res)=>{
             console.log(res.data);
             if(res.data){
-                toast.success('loggedin successfully');
+                toast.success('loggin successfully');
                 document.getElementById('my_modal_3').close()
                 setTimeout(() => {
                     window.location.reload();
