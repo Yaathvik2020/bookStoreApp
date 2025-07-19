@@ -1,0 +1,27 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: backend-deployment
+  namespace: bookstoreapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels: 
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: wiings09/book-backend:v1
+        ports:
+        - containerPort: 4001
+        env:
+        - name: PORT
+          value: "4001"
+        - name: MongoDBURI
+          value: "mongodb://mongo:27017/bookstore"
+        - name: FRONTEND_URL
+          value: "http://localhost:5173"

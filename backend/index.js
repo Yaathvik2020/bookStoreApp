@@ -1,7 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
-import mongoose from 'mongoose';
 import cors from 'cors'
+import connectToMongoDB from './db.js'; // Import the MongoDB connection function
 
 
 import bookRoute from './route/book.route.js'
@@ -12,33 +12,21 @@ const app = express()
 dotenv.config();
 
 // app.use(cors());
-app.use(cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true,
-    methods:['GET', 'POST', 'PUT', 'DELETE' ],
-  }));
+app.use(cors());
 app.use(express.json());
 
-const PORT=process.env.PORT || 4000;
-const URI=process.env.MongoDBURI;
-console.log(URI)
+const PORT=process.env.PORT || 4001;
+connectToMongoDB(); // Call the function to connect to MongoDB
 
-//connect to mongodb
-try {
-    mongoose.connect(URI);
-
-    console.log("Connected to MongoDB")
-    
-} catch (error) {
-    console.log("Error: ", error);
-}
 
 //defining route
-app.use('/book', bookRoute)
-app.use('/user', userRoute);
+app.use('/api/book', bookRoute)
+app.use('/api/user', userRoute);
 
-
+app.get('/api/ok', (req, res) => {
+    res.status(200).send('Backend is running fine')
+})
 
 app.listen(PORT, () => {
-  console.log(`Server is listening on port ${PORT}`)
+  console.log(`✅ Server is listening on port ${PORT}`)
 })

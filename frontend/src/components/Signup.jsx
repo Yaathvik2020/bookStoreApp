@@ -13,7 +13,7 @@ const Signup = () => {
     const from = location.state?.from?.pathname || '/'
     const navigate = useNavigate();
 
-    const api = import.meta.env.VITE_API_URL;
+    const api = import.meta.env.VITE_API_URL || 'http://localhost:4001';
     console.log(api , " this is api url in signup component");
 
     const {
@@ -30,7 +30,7 @@ const Signup = () => {
             email : data.email,
             password : data.password
         }
-        await axios.post(`${api}/user/signup`, userInfo)
+        await axios.post(`${api}/api/user/signup`, userInfo)
         .then((res)=>{
             console.log(res.data);
             if(res.data){

@@ -7,7 +7,7 @@ import axios from 'axios'
 
 const Course = () => {
 
-  const api = import.meta.env.VITE_API_URL;
+  const api = import.meta.env.VITE_API_URL || 'http://localhost:4001';
   console.log(api, " this is api url in course component");
   const [book, setBook] = useState([])
   
@@ -15,7 +15,7 @@ const Course = () => {
     
     const getbook =async ()=>{
       try {
-        const res =await axios.get(`${api}/book`);
+        const res =await axios.get(`${api}/api/book`);
         console.log(res.data);
         setBook(res.data)
       } catch (error) {

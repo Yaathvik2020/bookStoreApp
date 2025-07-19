@@ -1,31 +1,28 @@
-# Step 1: Build the React app
+# Step 1: Build the Vite app
 FROM node:20-alpine AS build
 
 WORKDIR /app
 
-COPY package.json package-lock.json ./
+COPY package*.json ./
 RUN npm install
 
 COPY . .
 
-# Optional: Pass build-time environment variables
+# Pass environment variable at build time
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
+# Build static assets
 RUN npm run build
 
-# Step 2: Serve with Nginx
-FROM nginx:stable-alpine
+# Step 2: Use Nginx to serve static files
+FROM nginx:alpine
 
-# Remove default nginx static content
-RUN rm -rf /usr/share/nginx/html/*
-
-# Copy built React app to Nginx's web root
+# Copy build output to nginx html folder
 COPY --from=build /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Copy custom Nginx config (optional)
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Optional: Custom Nginx config to handle SPA routing (important for React Router)
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 

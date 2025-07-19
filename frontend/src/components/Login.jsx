@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 
 const Login = () => {
 
-    const api = import.meta.env.VITE_API_URL;
+    const api = import.meta.env.VITE_API_URL || 'http://localhost:4001';
 
     const {
         register,
@@ -20,7 +20,7 @@ const Login = () => {
             email : data.email,
             password : data.password
         }
-        await axios.post(`${api}/user/login`, userInfo)
+        await axios.post(`${api}/api/user/login`, userInfo)
         .then((res)=>{
             console.log(res.data);
             if(res.data){
