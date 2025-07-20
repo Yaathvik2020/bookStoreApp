@@ -23,7 +23,7 @@ connectToMongoDB(); // Call the function to connect to MongoDB
 app.use('/api/book', bookRoute)
 app.use('/api/user', userRoute);
 
-app.get('/api/ok', (req, res) => {
+app.get('/ok', (req, res) => {
     res.status(200).send('Backend is running fine')
 })
 
