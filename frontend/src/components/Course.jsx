@@ -15,7 +15,7 @@ const Course = () => {
     
     const getbook =async ()=>{
       try {
-        const res =await axios.get(`${api}/api/book`);
+        const res =await axios.get(`${api}/book`);
         console.log(res.data);
         setBook(res.data)
       } catch (error) {

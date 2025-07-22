@@ -20,7 +20,7 @@ const Login = () => {
             email : data.email,
             password : data.password
         }
-        await axios.post(`${api}/api/user/login`, userInfo)
+        await axios.post(`${api}/user/login`, userInfo)
         .then((res)=>{
             console.log(res.data);
             if(res.data){
