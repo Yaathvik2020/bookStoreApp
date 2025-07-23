@@ -14,6 +14,11 @@ deployed on **AWS EKS** using Kubernetes and exposed via **NGINX Ingress Control
   - Generate Security Credentials: `Access Key` and `Secret Access Key`.
 - Basic Docker and Kubernetes knowledge
 
+## **Architecture of Deployment**
+![3-Tier Web App Architecture on EKS](architecture.png)
+
+*Figure: High-level architecture showing React frontend, Node.js backend, and MongoDB database deployed on AWS EKS with NGINX Ingress Controller.*
+
 ## **Launch a Bastion Host (EC2 t2.micro)**
 
 > **Note:** This Bastion Host is not the part of EKS cluster, but we will use this instance to install neccessay configuration and EKS cluster.
