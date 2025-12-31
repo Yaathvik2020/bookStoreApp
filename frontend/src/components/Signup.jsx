@@ -13,7 +13,7 @@ const Signup = () => {
     const from = location.state?.from?.pathname || '/'
     const navigate = useNavigate();
 
-    const api = import.meta.env.VITE_API_URL || 'http://localhost:4001';
+    const api = import.meta.env.VITE_API_URL || 'http://localhost:4001/api';
     console.log(api , " this is api url in signup component");
 
     const {
