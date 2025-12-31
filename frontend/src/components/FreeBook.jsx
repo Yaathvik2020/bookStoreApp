@@ -7,7 +7,7 @@ import axios from 'axios';
 
 const FreeBook = () => {
 
-    const api = import.meta.env.VITE_API_URL || 'http://localhost:4001';
+    const api = import.meta.env.VITE_API_URL || 'http://localhost:4001/api';
     console.log(api, " this is api url in free book component");
 
     const [book, setBook] = useState([])
