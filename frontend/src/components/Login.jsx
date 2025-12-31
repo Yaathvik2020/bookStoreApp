@@ -6,7 +6,7 @@ import toast from 'react-hot-toast'
 
 const Login = () => {
 
-    const api = import.meta.env.VITE_API_URL || 'http://localhost:4001';
+    const api = import.meta.env.VITE_API_URL || 'http://localhost:4001/api';
 
     const {
         register,
