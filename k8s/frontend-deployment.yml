@@ -22,7 +22,10 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: wiings09/book-frontend:v1
+        image: yaathvik20/book-mernproj-frontend:v1
         imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: api-url
         ports:
         - containerPort: 80
