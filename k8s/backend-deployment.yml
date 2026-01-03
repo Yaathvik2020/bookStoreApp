@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: wiings09/book-backend:v1
+          image: yaathvik20/book-mernproj-backend:v1
           ports:
             - containerPort: 4001
           env:
