@@ -1,0 +1,26 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "bookstor-helm.fullname" . }}-app-ingress
+  labels:
+  {{- include "bookstor-helm.labels" . | nindent 4 }}
+spec:
+  ingressClassName: haproxy
+  rules:
+  - host: ksyitsolve.org.com
+    http:
+      paths:
+      - backend:
+          service:
+            name: '{{ include "bookstor-helm.fullname" . }}-frontend-service'
+            port:
+              number: 80
+        path: /
+        pathType: Prefix
+      - backend:
+          service:
+            name: '{{ include "bookstor-helm.fullname" . }}-backend-service'
+            port:
+              number: 4001
+        path: /api
+        pathType: Prefix

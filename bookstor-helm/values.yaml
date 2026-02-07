@@ -1,0 +1,64 @@
+apiUrl:
+  viteApiUrl: http://65.1.86.146:31175
+backend:
+  backend:
+    env:
+      mongodburl: mongodb://mongodb-svc:27017/bookstore?directConnection=true
+    image:
+      repository: yaathvik20/book-mernproj-backend
+      tag: v1
+  nodeSelector: {}
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+    type: RollingUpdate
+  tolerations: []
+  topologySpreadConstraints: []
+backendService:
+  ports:
+  - port: 4001
+    protocol: TCP
+    targetPort: 4001
+  type: ClusterIP
+dbSvc:
+  ports:
+  - port: 27017
+    targetPort: 27017
+  type: ClusterIP
+frontend:
+  frontend:
+    image:
+      repository: yaathvik20/book-mernproj-frontend
+      tag: v1
+    imagePullPolicy: Always
+  nodeSelector: {}
+  replicas: 1
+  strategy:
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 25%
+    type: RollingUpdate
+  tolerations: []
+  topologySpreadConstraints: []
+frontendService:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  type: ClusterIP
+kubernetesClusterDomain: cluster.local
+mongo:
+  mongo:
+    image:
+      repository: mongo
+      tag: "6.0"
+  nodeSelector: {}
+  replicas: 1
+  tolerations: []
+  topologySpreadConstraints: []
+pvc:
+  pvc:
+    storageClass: ebs-gp3-sc
+    storageRequest: 1Gi
