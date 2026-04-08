@@ -5,7 +5,7 @@ backend:
     env:
       mongodburl: mongodb://mongodb-svc:27017/bookstore?directConnection=true
     image:
-      repository: yaathvik20/book-mernproj-backend
+      repository: yaathvik20/bookstore-mern-backend:replaceImageTag
       tag: v1
   nodeSelector: {}
   replicas: 1
@@ -30,7 +30,7 @@ dbSvc:
 frontend:
   frontend:
     image:
-      repository: yaathvik20/book-mernproj-frontend
+      repository: yaathvik20/bookstore-mern-frontend:replaceImageTag
       tag: v1
     imagePullPolicy: Always
   nodeSelector: {}
