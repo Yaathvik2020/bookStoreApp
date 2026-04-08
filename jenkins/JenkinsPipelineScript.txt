@@ -1,0 +1,158 @@
+pipeline {
+    agent any
+    tools{
+      nodejs 'nodejs'
+    }
+    environment {
+        SCANNER_HOME=tool 'sonar-server'
+    }
+    stages {
+        stage('Workspace Cleaning'){
+            steps{
+                cleanWs()
+            }
+        }
+        stage('Checkout from Git'){
+            steps{
+                git branch: 'main', url: 'https://github.com/Yaathvik2020/bookStoreApp.git'
+            }
+        }
+        stage('Install Dependencies frontend') {
+            steps {
+                dir('backend') {
+                    // Install project dependencies (needed for OWASP + build)
+                    sh 'npm install'
+                }
+            }
+        }
+        stage('Install Dependencies backend') {
+            steps {
+                dir('frontend') {
+                    // Install project dependencies (needed for OWASP + build)
+                    sh 'npm install'
+                }
+            }
+        }
+        stage("SonarQube Analysis") {
+            steps {
+                dir('frontend') {
+                    withSonarQubeEnv('sonar-server') {
+                        // Run SonarQube scanner using npx (no global install)
+                        // inject the Global env variable 
+                        sh '''
+                        echo "🔍 Starting SonarQube Analysis..."
+                        npx @sonar/scan \
+                        -Dsonar.projectKey=bookStoreApp \
+                        -Dsonar.projectName=bookStoreApp \
+                        -Dsonar.sources=src \
+                        -Dsonar.language=ts \
+                        -Dsonar.exclusions=dist/**,node_modules/**,public/** \
+                        -Dsonar.host.url=$SONAR_HOST_URL \
+                        -Dsonar.login=$SONAR_AUTsH_TOKEN
+                        '''
+                    }
+                }
+            }
+        }
+        stage("Quality Gate") {
+            steps {
+                    script {
+                        waitForQualityGate abortPipeline: false, credentialsId: 'sonar-token' 
+                    }
+                } 
+         }
+        stage('OWASP Dependency Check') {
+            steps {
+                dir('frontend') {
+                    echo "🔒 Running OWASP Dependency Check..."
+                    dependencyCheck additionalArguments: '--scan ./ --format XML --out .', odcInstallation: 'owasp-dp-check'
+                    dependencyCheckPublisher pattern: '**/dependency-check-report.xml'
+                }
+            }
+        }
+        stage('TRIVY FS SCAN') {
+            steps {
+                dir('frontend') {
+                    sh "trivy fs . > trivyfs.txt"
+                }
+            }
+        }
+        stage("Frontend-Docker Image Build&Push"){
+            steps{
+                dir('frontend') {
+                    script{
+                       withDockerRegistry(credentialsId: 'docker-hub-id', toolName: 'docker') {
+                        // Commands here are authenticated
+                        sh "docker build -t yaathvik20/bookstore-mern-frontend:${BUILD_NUMBER} ."   
+                        sh "docker push yaathvik20/bookstore-mern-frontend:${BUILD_NUMBER}"                        
+                      }
+                    }
+                }
+            }
+        }
+        stage("Backend-Docker Image Build&Push"){
+            steps{
+                dir('backend') {
+                    script{
+                       withDockerRegistry(credentialsId: 'docker-hub-id', toolName: 'docker') {
+                        // Commands here are authenticated
+                        sh "docker build -t yaathvik20/bookstore-mern-backend:${BUILD_NUMBER} ." 
+                        sh "docker push yaathvik20/bookstore-mern-backend:${BUILD_NUMBER}"
+                      }
+                    }
+                }
+            }
+        }
+        stage("TRIVY frontend-backend Image Scan"){
+            steps{
+                sh "trivy image yaathvik20/bookstore-mern-frontend:${BUILD_NUMBER} > trivyimage.txt" 
+                sh "trivy image yaathvik20/bookstore-mern-backend:${BUILD_NUMBER} > trivyimage.txt" 
+                
+            }
+        }
+        stage('Image tag update on the helm value file ') {
+        environment {
+            GIT_REPO_NAME = "bookStoreApp"
+            GIT_USER_NAME = "Yaathvik2020"
+        }
+        steps {
+            withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
+                sh '''
+                    git config --global user.email "chinnayaathvik@gmail.com"
+                    git config --global user.name "Yaathvik2020"
+                    BUILD_NUMBER=${BUILD_NUMBER}
+                    sed -i "s/replaceImageTag/${BUILD_NUMBER}/g" bookstor-helm/values.yaml
+                    git config --global --add safe.directory /var/lib/jenkins/workspace/Yaathvik_CI_pipeline
+                    git add bookstor-helm/values.yaml
+                    git commit -m "Update deployment image to version ${BUILD_NUMBER}"
+                    git push https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME} HEAD:main
+                '''
+            }
+        }
+    }
+    }
+    post {
+        always {
+            script {
+                def colorCode = currentBuild.result == 'SUCCESS' ? '#2eb886' : 
+                                currentBuild.result == 'FAILURE' ? '#ff0000' : '#daa038'
+    
+                slackSend(
+                    channel: '#all-yaathvik20',
+                    color: colorCode,
+                    message: """
+                    *🚀 Jenkins Build Notification*
+                    *Project:* ${env.JOB_NAME}
+                    *Build Number:* #${env.BUILD_NUMBER}
+                    *Status:* *${currentBuild.result}*
+                    *URL:* <${env.BUILD_URL}|Open Build>
+    
+                    ${currentBuild.result == 'SUCCESS' ? '✅ All steps completed successfully!' : 
+                    currentBuild.result == 'FAILURE' ? '❌ Build failed. Please check logs.' : 
+                    '⚠️ Build is unstable or aborted.'}
+                    """.stripIndent()
+                )
+            }
+        }
+    }
+}
