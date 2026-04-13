@@ -60,5 +60,5 @@ mongo:
   topologySpreadConstraints: []
 pvc:
   pvc:
-    storageClass: ebs-gp3-sc
+    storageClass: ebs-sc
     storageRequest: 1Gi
