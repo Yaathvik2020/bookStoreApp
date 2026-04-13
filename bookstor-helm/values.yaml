@@ -6,7 +6,7 @@ backend:
       mongodburl: mongodb://mongodb-svc:27017/bookstore?directConnection=true
     image:
       repository: yaathvik20/bookstore-mern-backend
-      tag: replaceImageTag
+      tag: 4
   nodeSelector: {}
   replicas: 1
   strategy:
@@ -31,7 +31,7 @@ frontend:
   frontend:
     image:
       repository: yaathvik20/bookstore-mern-frontend
-      tag: replaceImageTag
+      tag: 4
     imagePullPolicy: Always
   nodeSelector: {}
   replicas: 1
